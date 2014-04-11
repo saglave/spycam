@@ -1,4 +1,5 @@
 package teaonly.droideye;
+import teaonly.droideye.R;
 import teaonly.droideye.*;
 
 import java.io.IOException;
@@ -56,13 +57,12 @@ import android.widget.ImageButton;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.ads.*;
 
 public class MainActivity extends Activity 
     implements View.OnTouchListener, CameraView.CameraReadyCallback, OverlayView.UpdateDoneCallback{
     private static final String TAG = "TEAONLY";
 
-    private AdView adView;
+    //private AdView adView;
 
     boolean inProcessing = false;
     final int maxVideoNumber = 3;
@@ -86,15 +86,15 @@ public class MainActivity extends Activity
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         Window win = getWindow();
         win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);    
-        //win.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN); 
+        win.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN); 
 
         setContentView(R.layout.main);
 
         //setup adView
-        LinearLayout layout = (LinearLayout)findViewById(R.id.layout_setup);
+        /*LinearLayout layout = (LinearLayout)findViewById(R.id.layout_setup);
         adView = new AdView(this, AdSize.BANNER, "a1507f940fc****");
         layout.addView(adView);
-        adView.loadAd(new AdRequest());
+        adView.loadAd(new AdRequest());*/
 
         btnExit = (Button)findViewById(R.id.btn_exit);
         btnExit.setOnClickListener(exitAction);
@@ -114,7 +114,7 @@ public class MainActivity extends Activity
     
     @Override
     public void onCameraReady() {
-        if ( initWebServer() ) {
+        if (initWebServer()) {
             int wid = cameraView_.Width();
             int hei = cameraView_.Height();
             cameraView_.StopPreview();

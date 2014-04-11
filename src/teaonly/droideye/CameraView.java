@@ -24,7 +24,7 @@ public class CameraView implements SurfaceHolder.Callback{
  
     private List<Camera.Size> supportedSizes; 
     private Camera.Size procSize_;
-    private boolean inProcessing_ = false;
+    //private boolean inProcessing_ = false;
 
     public CameraView(SurfaceView sv){
         surfaceView_ = sv;
