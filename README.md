@@ -5,7 +5,7 @@ Change your android phone to a surveillance security camera.
 
 ## Download ##
 You can download binrary from Google Play: 
-https://play.google.com/store/apps/details?id=teaonly.droideye 
+https://play.google.com/store/apps/details?id=spy.cam 
 
 ## Specifications ##
 * Streaming 

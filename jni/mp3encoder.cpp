@@ -2,7 +2,7 @@
 
 #include "libmp3lame/lame.h"
 
-#define  JNIDEFINE(fname) Java_teaonly_droideye_MainActivity_##fname
+#define  JNIDEFINE(fname) Java_spy_cam_MainActivity_##fname
 extern "C" {
     JNIEXPORT jint JNICALL JNIDEFINE(nativeOpenEncoder)(JNIEnv* env, jclass clz);
     JNIEXPORT jint JNICALL JNIDEFINE(nativeEncodingPCM)(JNIEnv* env, jclass clz, jbyteArray pcmData, jint length, jbyteArray mp3Data);

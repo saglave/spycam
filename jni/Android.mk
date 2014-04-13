@@ -1,7 +1,3 @@
-#####################################################################
-# the build script for NDK for droidipcam project
-#
-
 LOCAL_PATH:= $(call my-dir)
 
 ###########################################################
@@ -30,4 +26,4 @@ include $(LOCAL_PATH)/libnatpmp_build.mk
 
 LOCAL_LDLIBS := -llog
 
-include $(BUILD_SHARED_LIBRARY)   
+include $(BUILD_SHARED_LIBRARY)  
