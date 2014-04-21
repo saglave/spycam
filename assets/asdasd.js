@@ -93,7 +93,7 @@ var playClick = function () {
         
         refreshLive();
 
-        if ( 1 ) {
+        if ( $("#checkbox-audio").is(":checked") ) {
             var newClip = {'url':'stream/live.mp3?id='+audioCount,'autoplay':true};
             audioCount ++;
             audioPlayer.play(newClip);

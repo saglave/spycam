@@ -1,6 +1,7 @@
 package spy.cam;
 import spy.cam.*;
 
+
 import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,6 +15,12 @@ import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import  org.apache.http.conn.util.InetAddressUtils;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -67,7 +74,7 @@ public class MainActivity extends Activity
     VideoFrame[] videoFrames = new VideoFrame[maxVideoNumber];
     byte[] preFrame = new byte[1024*1024*8];
     
-    TeaServer webServer = null;
+    Server webServer = null;
     private CameraView cameraView_;
     private OverlayView overlayView_;
     private Button btnExit;
@@ -84,7 +91,7 @@ public class MainActivity extends Activity
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         Window win = getWindow();
         win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);    
-        //win.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN); 
+        
 
         setContentView(R.layout.main);
 
@@ -194,29 +201,28 @@ public class MainActivity extends Activity
     }
     
     public String getLocalIpAddress() {
-        try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
-                NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    //if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress() && inetAddress.isSiteLocalAddress() ) {
-                    if (!inetAddress.isLoopbackAddress() && InetAddressUtils.isIPv4Address(inetAddress.getHostAddress()) ) {
-                        String ipAddr = inetAddress.getHostAddress();
-                        return ipAddr;
-                    }
-                }
-            }
-        } catch (SocketException ex) {
-            Log.d(TAG, ex.toString());
-        }
-        return null;
+
+        	WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+        	WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        	int ipAddress = wifiInfo.getIpAddress();
+        	String ip = intToIp(ipAddress);
+        	Log.v(TAG, ip);
+        	return ip;
+
     }   
+    public String intToIp(int i) {
+
+    	   return ((i & 0xFF) & 0xFF ) + "." +
+    	               ((i >> 8 ) & 0xFF) + "." +
+    	               ((i >> 16 ) & 0xFF) + "." +
+    	               ( i >> 24 ) ;
+    }
 
     private boolean initWebServer() {
         String ipAddr = getLocalIpAddress();
         if ( ipAddr != null ) {
             try{
-                webServer = new TeaServer(8080, this); 
+                webServer = new Server(8080, this); 
                 webServer.registerCGI("/cgi/query", doQuery);
                 webServer.registerCGI("/cgi/setup", doSetup);
                 webServer.registerCGI("/stream/live.jpg", doCapture);
@@ -226,9 +232,7 @@ public class MainActivity extends Activity
             }
         }
         if ( webServer != null) {
-            tvMessage1.setText( getString(R.string.msg_access_local) + " http://" + ipAddr  + ":8080" );
-            NatPMPClient natQuery = new NatPMPClient();
-            natQuery.start();  
+            tvMessage1.setText( getString(R.string.msg_access_local)+ " " + ipAddr  + ":8080" );
             return true;
         } else {
             tvMessage1.setText( getString(R.string.msg_error) );
@@ -260,7 +264,7 @@ public class MainActivity extends Activity
         }
     };
     
-    private TeaServer.CommonGatewayInterface doQuery = new TeaServer.CommonGatewayInterface () {
+    private Server.CommonGatewayInterface doQuery = new Server.CommonGatewayInterface () {
         @Override
         public String run(Properties parms) {
             String ret = "";
@@ -280,12 +284,12 @@ public class MainActivity extends Activity
         }    
     }; 
 
-    private TeaServer.CommonGatewayInterface doSetup = new TeaServer.CommonGatewayInterface () {
+    private Server.CommonGatewayInterface doSetup = new Server.CommonGatewayInterface () {
         @Override
         public String run(Properties parms) {
             int wid = Integer.parseInt(parms.getProperty("wid")); 
             int hei = Integer.parseInt(parms.getProperty("hei"));
-            Log.d("TEAONLY", ">>>>>>>run in doSetup wid = " + wid + " hei=" + hei);
+            Log.d("SPY", ">>>>>>>run in doSetup wid = " + wid + " hei=" + hei);
             cameraView_.StopPreview();
             cameraView_.setupCamera(wid, hei, previewCb_);
             cameraView_.StartPreview();
@@ -298,7 +302,7 @@ public class MainActivity extends Activity
         }    
     }; 
 
-    private TeaServer.CommonGatewayInterface doBroadcast = new TeaServer.CommonGatewayInterface() {
+    private Server.CommonGatewayInterface doBroadcast = new Server.CommonGatewayInterface() {
         @Override
         public String run(Properties parms) {
             return null;
@@ -329,7 +333,7 @@ public class MainActivity extends Activity
 
     };
 
-    private TeaServer.CommonGatewayInterface doCapture = new TeaServer.CommonGatewayInterface () {
+    private Server.CommonGatewayInterface doCapture = new Server.CommonGatewayInterface () {
         @Override
         public String run(Properties parms) {
            return null;
@@ -346,11 +350,10 @@ public class MainActivity extends Activity
             }
             // return 503 internal error
             if ( targetFrame == null) {
-                Log.d("TEAONLY", "No free videoFrame found!");
+                Log.d("SPY", "No free videoFrame found!");
                 return null;
             }
 
-            // compress yuv to jpeg
             int picWidth = cameraView_.Width();
             int picHeight = cameraView_.Height(); 
             YuvImage newImage = new YuvImage(preFrame, ImageFormat.NV21, picWidth, picHeight, null);
@@ -364,13 +367,12 @@ public class MainActivity extends Activity
             } 
             inProcessing = false;
 
-            // compress success, return ok
+
             if ( ret == true)  {
                 parms.setProperty("mime", "image/jpeg");
                 InputStream ins = targetFrame.getInputStream();
                 return ins;
             }
-            // send 503 error
             targetFrame.release();
 
             return null;
@@ -406,7 +408,6 @@ public class MainActivity extends Activity
                     break; 
                 }
 
-                //TODO: call jni encoding PCM to mp3
                 ret = nativeEncodingPCM(audioPackage, ret, mp3Data);          
                 
                 try {
@@ -419,32 +420,6 @@ public class MainActivity extends Activity
             audioLoop.ReleaseLoop();
             nativeCloseEncoder();
         }
-    }
-
-    
-    static private native String nativeQueryInternet();    
-    private class NatPMPClient extends Thread {
-        String queryResult;
-        Handler handleQueryResult = new Handler(getMainLooper());  
-        @Override
-        public void run(){
-            queryResult = nativeQueryInternet();
-            if ( queryResult.startsWith("error:") ) {
-                handleQueryResult.post( new Runnable() {
-                    @Override
-                    public void run() {
-                        tvMessage2.setText( getString(R.string.msg_access_query_error));                        
-                    }
-                });
-            } else {
-                handleQueryResult.post( new Runnable() {
-                    @Override
-                    public void run() {
-                        tvMessage2.setText( getString(R.string.msg_access_internet) + " " + queryResult );
-                    }
-                });
-            }
-        }    
     }
 }    
 

@@ -95,7 +95,7 @@ public class CameraView implements SurfaceHolder.Callback{
         p.setPreviewSize(procSize_.width, procSize_.height);
         
         camera_.setParameters(p);
-        //camera_.setDisplayOrientation(90);
+        camera_.setDisplayOrientation(90);
         try {
             camera_.setPreviewDisplay(surfaceHolder_);
         } catch ( Exception ex) {

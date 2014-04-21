@@ -16,8 +16,7 @@ import android.util.Log;
 
 public class StreamingLoop
 {
-    private static String TAG = "TEAONLY";
-	//Local data loopback
+    private static String TAG = "SPY";
 	private LocalSocket receiver,sender;			
 	private LocalServerSocket lss;		
 	private String localAddress;
@@ -66,9 +65,7 @@ public class StreamingLoop
 		try {
 			receiver.connect(new LocalSocketAddress(localAddress));
 			receiver.setReceiveBufferSize(recvBufferSize);
-			//receiver.setSendBufferSize(512);
 			sender = lss.accept();
-			//sender.setReceiveBufferSize(512);
 			sender.setSendBufferSize(sendBufferSize);
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -25,6 +25,7 @@
             android:layout_height="fill_parent" 
             android:gravity="center|bottom" 
             android:orientation="vertical">
+            <TableRow android:id="@+id/tableRow1" android:layout_width="match_parent" android:layout_height="wrap_content"></TableRow>
             
             <LinearLayout
                 android:layout_height="wrap_content" 
@@ -32,15 +33,6 @@
                 android:gravity="center"
                 android:background="#88333333"
                 android:orientation="vertical">
-                <TextView
-                    android:id="@+id/tv_message1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft = "5dip"
-                    android:layout_marginRight = "5dip"
-                    android:gravity="center"
-                    android:textColor="#FFFFFFFF"
-                    android:textSize="24dip"/>
                 <TextView
                     android:id="@+id/tv_message2"
                     android:visibility="gone"
@@ -54,11 +46,12 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_height="wrap_content" 
-                android:layout_width="fill_parent"
-                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:background="#88333333"
-                android:orientation="horizontal">
+                android:gravity="right"
+                android:orientation="horizontal" >
+
                 <!--
                 <Button 
                     android:id="@+id/btn_setup"
@@ -69,19 +62,30 @@
                     android:textStyle="bold"            
                     android:text="@string/action_setup"/>
                 -->
-                <Button 
+
+                <Button
                     android:id="@+id/btn_exit"
-                    android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:layout_margin = "8dip"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dip"
+                    android:text="@string/action_exit"
                     android:textSize="24dip"
-                    android:textStyle="bold"            
-                    android:text="@string/action_exit"/>
+                    android:textStyle="bold" />
 
             </LinearLayout>
             
         </LinearLayout>
 
-    </FrameLayout>    
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tv_message1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dip"
+        android:layout_marginRight="5dip"
+        android:gravity="center"
+        android:textColor="#FFFFFFFF"
+        android:textSize="24dip" />
    
 </FrameLayout>
